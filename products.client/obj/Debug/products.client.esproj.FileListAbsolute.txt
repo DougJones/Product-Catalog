@@ -1,1 +1,2 @@
 C:\Users\jones\source\repos\Products\products.client\obj\Debug\products.client.esproj.CoreCompileInputs.cache
+C:\Users\jones\source\Products\products.client\obj\Debug\products.client.esproj.CoreCompileInputs.cache
