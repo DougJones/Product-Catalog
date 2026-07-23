@@ -48,10 +48,10 @@
             <small class="d-block text-uppercase fw-bold text-muted small mb-1">Detected Sharing Location Context</small>
             <span class="text-dark fw-semibold">
               <i class="bi bi-geo-alt-fill text-danger me-1"></i>
-              @if (isLocating) {
+              @if (isLocating()) {
               <span class="spinner-border spinner-border-sm text-secondary" role="status"></span> Resolving coordinates...
               } @else {
-              {{ cityName }}
+              {{ cityName() }}
               }
             </span>
           </div>

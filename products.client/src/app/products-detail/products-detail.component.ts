@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ProductService } from '../services/product.service'
 import { ProductDetail } from '../entities/product';
 import { Observable } from 'rxjs';
+import { signal} from '@angular/core';
 
 @Component({
   selector: 'app-product-detail',
@@ -15,8 +16,8 @@ import { Observable } from 'rxjs';
 })
 export class ProductDetailComponent implements OnInit {
   product$!: Observable<ProductDetail>;
-  cityName: string = 'Local Location'; // Fallback default
-  isLocating: boolean = false;
+  cityName = signal<string>('Local Location'); 
+  isLocating = signal<boolean>(false);
   shareableMessage: string = '';
 
   constructor(
@@ -42,37 +43,32 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
-    this.isLocating = true;
+    this.isLocating.set(true);
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-
-        // Free reverse-geocoding endpoint requiring no custom API key registrations
-        const geocodeUrl = `https://bigdatacloud.net{lat}&longitude=${lon}&localityLanguage=en`;
-
+      () => {
+        const geocodeUrl = 'http://ip-api.com/json/?fields=city';
         this.http.get<any>(geocodeUrl).subscribe({
           next: (res) => {
-            // Traverse potential locality attributes to isolate the city string cleanly
-            this.cityName = res.city || res.locality || res.principalSubdivision || 'Your City';
-            this.isLocating = false;
+            this.cityName.set(res.city);  
+            this.isLocating.set(false);
+            
           },
           error: () => {
-            this.isLocating = false; // Graceful fallback to default on network error
+            this.isLocating.set(false);
           }
         });
       },
       () => {
-        this.isLocating = false; // Graceful fallback if user blocks location permissions
+        this.isLocating.set(false);
       }
     );
   }
 
-  // Task 2 Action Item: "Add to List" Sharing Core Engine
+  
   addToListAndShare(product: ProductDetail): void {
-    // Compile share string exactly to the assessment's formatting sequence specifications
-    this.shareableMessage = `${product.title} - ${product.price} from ${this.cityName} added to list`;
+  
+    this.shareableMessage = `${product.title} - ${product.price} from ${this.cityName()} added to list`;
 
     // Code Challenge Best Practice: Use modern Web Share API, with clipboard backup
     if (navigator.share) {
