@@ -1,0 +1,24 @@
+@HostAddress = http://localhost:5242
+
+
+### 1. Get Product Summaries (Task 1 Endpoint 1)
+GET {{HostAddress}}/api/products
+Accept: application/json
+
+###
+
+### 2. Get Product Metrics Data (Task 1 Endpoint 3)
+GET {{HostAddress}}/api/products/metrics
+Accept: application/json
+
+###
+
+### 3. Get Bananas Detail by ID 0 (Task 1 Endpoint 2)
+GET {{HostAddress}}/api/products/0
+Accept: application/json
+
+###
+
+### 4. Get Missing Item ID to Verify 404 Error Boundary Handler
+GET {{HostAddress}}/api/products/999
+Accept: application/json
