@@ -1,0 +1,76 @@
+<div class="container py-5">
+  <!-- NAVIGATION BACK BUTTON LINK -->
+  <div class="mb-4">
+    <a routerLink="/" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+      <i class="bi bi-arrow-left me-1"></i> Back to Catalog Dashboard
+    </a>
+  </div>
+
+  <!-- Async Pipe Stream handling resolution -->
+  @if (product$ | async; as product) {
+  <div class="row g-5">
+
+    <!-- COLUMN 1: HIGH-RES RESPONSIVE IMAGE CONTAINER CARD -->
+    <div class="col-12 col-md-6">
+      <div class="card border-0 shadow-sm p-4 bg-light d-flex align-items-center justify-content-center h-100" style="min-height: 400px;">
+        <img [src]="product.imageUrl"
+             [alt]="product.title"
+             class="img-fluid rounded-3 object-fit-contain shadow-sm bg-white p-3"
+             style="max-height: 400px; width: 100%;">
+      </div>
+    </div>
+
+    <!-- COLUMN 2: DATA TEXT PROFILES & TRANSACTION CALL TO ACTIONS -->
+    <div class="col-12 col-md-6 d-flex flex-column justify-content-between">
+      <div>
+        <!-- Title & Badges Section -->
+        <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+          <h1 class="display-5 fw-bold text-dark mb-0">{{ product.title }}</h1>
+          <span class="badge bg-success fs-4 px-3 rounded-pill shadow-sm">{{ product.price }}</span>
+        </div>
+
+        <!-- Summary Snippet Quote Callout -->
+        <p class="lead text-primary fw-medium mb-4 italic-box">
+          <i class="bi bi-quote me-1 text-muted"></i>{{ product.summary }}
+        </p>
+
+        <!-- Core Long-Form Description Text Block -->
+        <h6 class="fw-bold text-muted text-uppercase small tracking-wider mb-2">Detailed Product Description</h6>
+        <p class="text-secondary lh-lg mb-4 text-justify" style="font-size: 1.05rem;">
+          {{ product.description }}
+        </p>
+      </div>
+
+      <!-- SHARE ENGINE TRANSACTION CONTROL PANEL BAR -->
+      <div class="card border-0 bg-body-tertiary p-3 shadow-sm rounded-3 mt-4">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+          <div>
+            <small class="d-block text-uppercase fw-bold text-muted small mb-1">Detected Sharing Location Context</small>
+            <span class="text-dark fw-semibold">
+              <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+              @if (isLocating) {
+              <span class="spinner-border spinner-border-sm text-secondary" role="status"></span> Resolving coordinates...
+              } @else {
+              {{ cityName }}
+              }
+            </span>
+          </div>
+
+          <!-- Click handler passes active async instance data down safely -->
+          <button (click)="addToListAndShare(product)"
+                  class="btn btn-primary btn-lg rounded-pill px-4 py-2 fw-bold shadow-sm d-inline-flex align-items-center justify-content-center">
+            <i class="bi bi-plus-circle-fill me-2"></i> Add to List & Share
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  } @else {
+  <!-- Hydration Skeleton State structure -->
+  <div class="text-center py-5 my-5">
+    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+    <p class="text-muted fs-5">Hydrating full product catalog schema profiles...</p>
+  </div>
+  }
+</div>

@@ -1,0 +1,173 @@
+<div class="container py-4">
+  <!-- TITLE AREA -->
+  <div class="d-flex align-items-center mb-4 border-bottom pb-3">
+    <i class="bi bi-shop text-primary fs-2 me-2"></i>
+    <h1 class="h2 mb-0 font-monospace">Product Catalog Dashboard</h1>
+  </div>
+
+  <!-- TASK 2: METRIC SUMMARY CARDS LAYER (Resolved via Async Pipe) -->
+  @if (metrics$ | async; as metrics) {
+  <div class="row g-3 mb-4">
+    <!-- Total Products -->
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="card bg-primary text-white border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <h6 class="text-uppercase text-white-50 small mb-1">Total Catalog</h6>
+            <h2 class="display-6 fw-bold mb-0">{{ metrics.totalProducts }}</h2>
+          </div>
+          <i class="bi bi-box-seam fs-1 text-white-50"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Average Price -->
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="card bg-success text-white border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <h6 class="text-uppercase text-white-50 small mb-1">Avg Price</h6>
+            <h2 class="display-6 fw-bold mb-0">${{ metrics.averagePrice }}</h2>
+          </div>
+          <i class="bi bi-tags fs-1 text-white-50"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Most Expensive -->
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="card bg-dark text-white border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-uppercase text-white-50 small mb-1">Most Expensive</h6>
+          <h5 class="card-title text-truncate mb-1">{{ metrics.mostExpensive.title }}</h5>
+          <p class="badge bg-danger mb-0 fs-6">{{ metrics.mostExpensive.price }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Least Expensive -->
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="card bg-light border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-uppercase text-muted small mb-1">Least Expensive</h6>
+          <h5 class="card-title text-truncate mb-1">{{ metrics.leastExpensive.title }}</h5>
+          <p class="badge bg-secondary mb-0 fs-6">{{ metrics.leastExpensive.price }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASK 2 CHART VISUALIZATION MIDDLE ROW -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 pt-3">
+          <h5 class="card-title mb-0 fw-bold text-muted">Price Unit Distribution Breakdown</h5>
+        </div>
+        <div class="card-body">
+          @if (metrics.byPriceUnit) {
+          <div class="row g-3 px-2">
+            @for (entry of metrics.byPriceUnit | keyvalue; track entry.key) {
+            <div class="col-12 col-md-4 col-lg-2.4">
+              <div class="d-flex justify-content-between text-muted small mb-1">
+                <span class="fw-bold">{{ entry.key }}</span>
+                <span>{{ entry.value }} items</span>
+              </div>
+              <div class="progress" style="height: 20px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                     role="progressbar"
+                     [style.width.%]="(entry.value / metrics.totalProducts) * 100">
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  } @else {
+  <div class="text-center py-4 text-muted">
+    <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+    Loading dashboard analytical metrics...
+  </div>
+  }
+
+  <!-- MAIN FILTER CONTROLS PANEL BLOCK -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm p-3 bg-body-tertiary">
+        <div class="row g-2">
+          <!-- Text Box Search String Filter Input Field -->
+          <div class="col-12 col-sm-8">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+              <input type="text" class="form-control border-start-0 ps-1"
+                     placeholder="Search product titles..."
+                     [(ngModel)]="searchQuery"
+                     (ngModelChange)="applyFilters()">
+            </div>
+          </div>
+          <!-- Dropdown Category Unit Filter Selection Field -->
+          <div class="col-12 col-sm-4">
+            <select class="form-select" [(ngModel)]="selectedPriceUnit" (ngModelChange)="applyFilters()">
+              <option value="">All Price Units</option>
+              <option value="/lb">Per Pound (/lb)</option>
+              <option value="/each">Per Each (/each)</option>
+              <option value="/bunch">Per Bunch (/bunch)</option>
+              <option value="/head">Per Head (/head)</option>
+              <option value="/bag">Per Bag (/bag)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DYNAMIC VERTICAL PRODUCT CATALOG LIST -->
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex flex-column gap-3">
+
+        <!-- Resolves the Filtered Stream via Async Pipe -->
+        @if (filteredProducts$ | async; as products) {
+        @for (product of products; track product.id) {
+        <div class="card border-0 shadow-sm hover-shadow overflow-hidden transition-all"
+             [routerLink]="['/products', product.id]"
+             style="cursor: pointer;">
+          <div class="row g-0 align-items-center">
+            <!-- Thumbnail Image Grid Icon Column -->
+            <div class="col-3 col-sm-1 text-center p-2 bg-light d-flex align-items-center justify-content-center" style="min-height: 90px;">
+              <img [src]="product.imageUrl" [alt]="product.title" class="img-fluid rounded-3 object-fit-contain" style="max-height: 70px;">
+            </div>
+            <!-- Content Metadata Descriptions Text Grid Column -->
+            <div class="col-9 col-sm-11">
+              <div class="card-body py-2 px-3">
+                <div class="d-flex justify-content-between align-items-baseline">
+                  <h5 class="card-title fw-bold text-dark mb-1 text-truncate">{{ product.title }}</h5>
+                  <i class="bi bi-chevron-right text-muted small"></i>
+                </div>
+                <p class="card-text text-muted mb-0 small text-truncate-2">{{ product.summary }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        } @empty {
+        <div class="alert alert-warning text-center border-0 py-4">
+          <i class="bi bi-exclamation-triangle fs-3 d-block mb-1"></i>
+          No items match your execution filter criteria.
+        </div>
+        }
+        } @else {
+        <!-- Hydration Skeleton State structure displayed during initial socket stream parsing -->
+        <div class="text-center py-5 text-muted">
+          <div class="spinner-border text-success mb-2" role="status"></div>
+          <p>Syncing product records from SQLite data layer...</p>
+        </div>
+        }
+
+      </div>
+    </div>
+  </div>
+</div>
