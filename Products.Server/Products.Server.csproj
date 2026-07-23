@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
+      <SpaProxyLaunchTimeout>120</SpaProxyLaunchTimeout>
       <Version>10.*-*</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
